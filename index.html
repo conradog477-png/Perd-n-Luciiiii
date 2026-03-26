@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mi casi algo especial 🌌✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ffb3c1;
+            --deep-purple: #7209b7;
+            --neon-blue: #00f2ff;
+            --text-shadow: 0 0 10px rgba(255, 179, 193, 0.7);
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 179, 193, 0.2);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #030303; /* Fondo casi negro profundo */
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- FONDO DEL TEMPLO MAJESTUOSO (SVG INTEGRADO) --- */
+        #temple-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Detrás de todo */
+            filter: blur(5px) brightness(0.6); /* Oscuro y desenfocado para legibilidad */
+            transform: scale(1.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #temple-background svg {
+            width: 120%; /* Más ancho para que llene la pantalla en horizontal si gira */
+            height: 120%;
+            object-fit: cover;
+            position: absolute;
+            bottom: -10%; /* Ajustar posición para que la base se vea bien en móvil vertical */
+        }
+
+        /* Degradado de oscuridad sobre el templo */
+        #temple-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(3, 3, 3, 0.4) 0%, rgba(3, 3, 3, 0.9) 100%);
+            z-index: -1;
+        }
+
+        /* Partículas de lluvia de estrellas/corazones */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .main-container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            padding: 50px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1; /* Sobre las partículas y el fondo */
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--primary-pink);
+            text-shadow: 0 0 20px rgba(255, 179, 193, 0.8);
+            animation: pulse 2.5s infinite;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #8093f1;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* --- Estilos de las Tarjetas (Glassmorphism) --- */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 15px 0;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 179, 193, 0.5);
+        }
+
+        /* Elementos Interactivos (Pixel Icons) */
+        .interactive-section {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 25px 0;
+        }
+
+        .interactive-item {
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .heart-icon { color: #ff4d6d; }
+        .flower-icon { color: #ffd166; }
+
+        /* Tarjeta Reclamado y Botón */
+        .claimed-container {
+            width: 100%;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2#claimed-text {
+            color: var(--neon-blue);
+            font-size: 1.8rem;
+            text-shadow: 0 0 15px var(--neon-blue);
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: none; /* Oculto hasta que se reclame */
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .heart-btn {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            border: none;
+            padding: 15px 35px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.2s;
+        }
+
+        .heart-btn.claimed {
+            display: none; /* Ocultar botón al reclamar */
+        }
+
+        #message {
+            display: none;
+            font-style: italic;
+            color: #ffe5ec;
+            margin-top: 10px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            animation: fadeIn 0.8s forwards;
+        }
+
+        /* Tarjeta de Eternidad */
+        .card.temple-quote-card {
+            border-color: var(--deep-purple);
+            background: rgba(114, 9, 183, 0.05);
+            margin-top: 30px;
+        }
+
+        .temple-quote {
+            font-size: 1.2rem;
+            color: #d1b3ff;
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.5;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.6);
+        }
+
+        /* Animaciones */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos para las partículas que flotan */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatAway 1.5s forwards;
+            z-index: 10;
+        }
+
+        @keyframes floatAway {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="temple-background">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="templeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#dcdcdc;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect x="15" y="70" width="70" height="45" rx="2" fill="url(#templeGrad)" />
+            <rect x="25" y="55" width="50" height="20" rx="2" fill="url(#templeGrad)" />
+            
+            <polygon points="50,5 56,55 44,55" fill="url(#templeGrad)" />
+            <circle cx="50" cy="5" r="1.5" fill="#ffd700" /> <polygon points="30,25 34,55 26,55" fill="url(#templeGrad)" />
+            <polygon points="70,25 74,55 66,55" fill="url(#templeGrad)" />
+            
+            <polygon points="38,40 40,55 36,55" fill="#c0c0c0" />
+            <polygon points="62,40 64,55 60,55" fill="#c0c0c0" />
+
+            <rect x="47" y="60" width="6" height="15" fill="rgba(0,0,0,0.2)" rx="1"/>
+            <rect x="30" y="75" width="4" height="10" fill="rgba(0,0,0,0.2)" rx="1"/>
+            <rect x="66" y="75" width="4" height="10" fill="rgba(0,0,0,0.2)" rx="1"/>
+        </svg>
+    </div>
+    <div id="temple-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="main-container">
+        <h1>Lo siento muchísimo ✨</h1>
+        <p class="subtitle">Una página especial para alguien inigualable</p>
+        
+        <div class="card">
+            <p>A veces ando **re en la Luna**, la verdad, y no mido mis palabras o acciones. Me siento fatal si te hice sentir mal. Quiero que sepas, y te lo digo en serio, que **tú eres mi mayor victoria**, JAJAJAJAJA, en cualquier juego y en la vida real.</p>
+        </div>
+
+        <div class="interactive-section">
+            <div class="interactive-item heart-icon" id="heartItem" onclick="animateItem('heartItem', '💖', 15)">❤️</div>
+            <div class="interactive-item flower-icon" id="flowerItem" onclick="animateItem('flowerItem', '🌸', 15)">🌻</div>
+        </div>
+
+        <div class="claimed-container card" style="border-color: rgba(0, 242, 255, 0.2);">
+            <h2 id="claimed-text">¡RECLAMADO!</h2>
+            <button class="heart-btn" id="claimBtn" onclick="showMessage()">RECLAMAR AMOR ❤️</button>
+            <div id="message">
+                "Prometo, solemnemente, pensar antes de hablar y dejar de meterme donde no me llaman, JAJAJAJAJA. Solo quiero verte sonreír. Descansa mucho, bonita, aquí estoy para lo que necesites (aunque sea a la distancia)."
+            </div>
+        </div>
+
+        <div class="card temple-quote-card">
+            <p class="temple-quote">"Donde el cielo besa la tierra, y nuestro 'nosotros' se siente eterno."</p>
+        </div>
+
+        <div class="card" style="background: none; border: none; box-shadow: none;">
+            <p style="font-size: 0.9rem; color: #a29bfe; font-weight: 300;">Eres increíble. Gracias por tu paciencia. ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Fondo Dinámico de Partículas (Lluvia de estrellas/corazones) ---
+        const pCanvas = document.getElementById('particle-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        
+        function setPCanvasSize() {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+        }
+        setPCanvasSize();
+
+        const p_particles = [];
+
+        // Menos partículas para mejor rendimiento en móvil
+        for (let i = 0; i < 50; i++) {
+            p_particles.push({
+                x: Math.random() * pCanvas.width,
+                y: Math.random() * pCanvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedX: Math.random() * 0.1 - 0.05,
+                speedY: Math.random() * 0.4 + 0.1,
+                color: Math.random() > 0.4 ? '#ffb3c1' : '#fff' // Rosa o Blanco
+            });
+        }
+
+        function drawPParticles() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            p_particles.forEach(p => {
+                pCtx.fillStyle = p.color;
+                pCtx.beginPath();
+                pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                pCtx.fill();
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.y > pCanvas.height) p.y = 0;
+            });
+            requestAnimationFrame(drawPParticles);
+        }
+        drawPParticles();
+        window.addEventListener('resize', setPCanvasSize);
+
+
+        // --- Funciones de Interacción y Efectos (Copia de la imagen) ---
+
+        function showMessage() {
+            const msg = document.getElementById('message');
+            const claimedText = document.getElementById('claimed-text');
+            const btn = document.getElementById('claimBtn');
+            const rect = btn.getBoundingClientRect();
+
+            // Explosión masiva (corazones, chocolates, etc.)
+            createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2, ['💖', '🌸', '🍫', '✨'], 30);
+            
+            // Reemplazar botón por texto "¡RECLAMADO!"
+            btn.classList.add('claimed');
+            claimedText.style.display = 'block';
+            msg.style.display = 'block';
+            msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function animateItem(itemId, emoji, count) {
+            const item = document.getElementById(itemId);
+            const rect = item.getBoundingClientRect();
+            
+            // Usar múltiples emojis si es una lista (para el reclamo)
+            const emojiList = Array.isArray(emoji) ? emoji : [emoji];
+            
+            createExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2, emojiList, count);
+            
+            item.style.animation = 'pulse 0.4s';
+            setTimeout(() => item.style.animation = '', 400);
+        }
+
+        // Crear explosión de partículas flotantes (como en la imagen)
+        function createExplosion(x, y, emojiList, count) {
+            const scollYOffset = window.scrollY;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Elegir emoji aleatorio de la lista
+                particle.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
+                particle.style.fontSize = Math.random() * 1.8 + 1 + 'rem';
+                particle.style.left = x + 'px';
+                particle.style.top = y + scollYOffset + 'px'; // Ajuste crucial por scroll
+                
+                // Dirección aleatoria
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 120 + 50; // Explosión contenida para móvil
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--dx', dx + 'px');
+                particle.style.setProperty('--dy', dy + 'px');
+                
+                document.body.appendChild(particle);
+                
+                // Limpiar la partícula después de la animación
+                setTimeout(() => {
+                    particle.remove();
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+              </html>
+              
